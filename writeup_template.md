@@ -19,14 +19,16 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./report_images/data_histogram.png "Visualization"
+[image1]: ./report_images/data_histogram.png    "Data Visualisation"
 [image2]: ./report_images/preprocess_images.png "Preprocess and Augment"
-[image3]: ./report_images/random_noise.jpg "Random Noise"
-[image4]: ./report_images/placeholder.png "Traffic Sign 1"
-[image5]: ./report_images/placeholder.png "Traffic Sign 2"
-[image6]: ./report_images/placeholder.png "Traffic Sign 3"
-[image7]: ./report_images/placeholder.png "Traffic Sign 4"
-[image8]: ./report_images/placeholder.png "Traffic Sign 5"
+[image3]: ./report_images/CF_Test.png           "Confusion Matrix"
+[image4]: ./report_images/left_turn.jpg         "Traffic Sign 1"
+[image5]: ./report_images/right_of_way.jpg      "Traffic Sign 2"
+[image6]: ./report_images/priority_road.jpg     "Traffic Sign 3"
+[image7]: ./report_images/road_work.jpg         "Traffic Sign 4"
+[image8]: ./report_images/spd_lmt_70.jpg        "Traffic Sign 5"
+[image9]: ./report_images/Top_5_Softmax.png     "Top 5 Softmax"
+[image10]: ./report_images/visual_features.png  "Visual Features"
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -110,25 +112,16 @@ The batch size was kept at 128 default since using other values (100) did not af
 
 ####4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
-My final model results were:
+I first started with the original Udacity data set and the LeNet architecture without modifying the optimiser or training parameters. I normalised the images but used RGB and no contrast modification nor data augmentation. LeNet reached a validation accuracy of ~92% and a test accuracy of ~89%. After this point, no matter what parameters I changed, the performance did not improve. I expected this since LeNet was originally designed for handwriting recognition and the traffic sign recognition problem is slightly more complex. So I decided to preprocess the data in a more structured way and also augment the unbalanced classes.
+
+Since I was making a larger data set, I also decided to use the approach in the Sermanet paper by creating a multi-level convolutional network based on LeNet. I kept the basic architecture the same and allowed layer skipping for the second and third conv layers. I experimented with different augmentation methods, including perspective warping, but finally settled on the three described in the paper, along with brightness perturbation. I believe brightness to be important because many of the traffic signs were in glare or in badly illuminated conditions, and I wanted the network to be invariant to using lighting as a feature because it is very noisy and not dependable across the entire data set.
+
+My final MultiNet model results were:
 * training set accuracy of 99.7%
 * validation set accuracy of 96.5% 
 * test set accuracy of 93.3%
 
-Based on these numbers, I feel that the network has over-fitted the training data, since the performance drops some over the validation set and even more over the much larger test set. Given time, I would make a more balanced training set and possibly increase the dropout to 50% to force slightly more regularisation.
-
-If an iterative approach was chosen:
-* What was the first architecture that was tried and why was it chosen?
-* What were some problems with the initial architecture?
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
-* Which parameters were tuned? How were they adjusted and why?
-* What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
-
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
- 
+Based on these numbers, I feel that the network has over-fitted the training data, since the performance drops some over the validation set and even more over the much larger test set. Given time, I would make a more balanced training set and possibly increase the dropout to 50% to force slightly more regularisation, given more time.
 
 ###Test a Model on New Images
 
@@ -139,7 +132,7 @@ Here are five German traffic signs that I found on the web:
 ![alt text][image4] ![alt text][image5] ![alt text][image6] 
 ![alt text][image7] ![alt text][image8]
 
-The first image might be difficult to classify because ...
+All of these belong to the classes present in the training data so I expect the network to recognise at least 4 out of 5, given the test accuracy of above 90%.
 
 ####2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
@@ -147,33 +140,37 @@ Here are the results of the prediction:
 
 | Image			        |     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Stop Sign      		| Stop sign   									| 
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
+| Left Turn Ahead       | Left Turn Ahead   						    | 
+| Priority Road    		| Priority Road 								|
+| Right of Way			| Right of Way  								|
+| Road Work	      		| Road Work    					 				|
+| 70 km/h			    | 70 km/h           							|
 
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+The model was able to correctly guess 5 of the 5 traffic signs, which gives an accuracy of 100%. This compares favorably to the accuracy on the test set of 93.3%, since this is a very small sample and this performance was expected.
 
 ####3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
-
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
+For all images, the model is very confident of the class of the sign. The top five soft max probabilities were
+![alt text][image9]
 
 | Probability         	|     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
+| 0.99         			| Left Turn Ahead								| 
+| 0.99     				| Priority Road									|
+| 0.99					| Right of Way									|
+| 0.99	      			| Road Work 					 				|
+| 0.98				    | 70 km/h           							|
 
+The slight drop in confidence for 70 km/h is interesting because the next category predicted is No Vehicles. If I look at the No Vehicles sign, it is just like a speed limit sign, except there is no text inside the red circle. So the network has given the closest next possible match, based on learned features. It is also interesting that it did not output the other classes of speed limit signs as second choice. This is a good thing for me because it may point to the fact that the network has learnt to distinguish the numbers inside each sign as well as the surrounding visual features.
 
-For the second image ... 
+The confusion matrix for the test data is shown in 
+![alt text][image10].
+
+By studying it, we can see that it is primarily diagonal, which means that the network has classified almost all classes correctly with few misclassifications. By looking for large off-diagonal elements, we can see that classes (11,18,21) have the most mis-classifications. For example, 11 (Right of Way) is often mistaken for 30(Beware of Ice/Snow). The sign for 30 has a snowflake in the middle of it. For low-resolution images, I can understand how the right-of-way symbol might look like a snow-flake. So this mis-classification is visually understandable, given the low quality images of the German data set. We can find similar reasoning for the other mis-classifications. For the five images, I was lucky, in a way, since the image I randomly chose, had good contrast and good enough resolution for the network to pick up the road work symbol clearly.
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 ####1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
 
+I implemented the visualisation for the first and second convolutional layers of the MultiNet, based on the template code given in the last cell of the notebook.. However, I was disappointed because I cannot make out any obvious features that it has learnt. Maybe it is the way I am plotting the results with imshow(). I will address this again in the future but given the overdue deadline, I will not invest more time on this at this point.
 
