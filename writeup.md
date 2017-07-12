@@ -19,16 +19,14 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./report_images/data_histogram.png    "Data Visualisation"
-[image2]: ./report_images/preprocess_images.png "Preprocess and Augment"
-[image3]: ./report_images/CF_Test.png           "Confusion Matrix"
-[image4]: ./report_images/left_turn.jpg         "Traffic Sign 1"
-[image5]: ./report_images/right_of_way.jpg      "Traffic Sign 2"
-[image6]: ./report_images/priority_road.jpg     "Traffic Sign 3"
-[image7]: ./report_images/road_work.jpg         "Traffic Sign 4"
-[image8]: ./report_images/spd_lmt_70.jpg        "Traffic Sign 5"
-[image9]: ./report_images/Top_5_Softmax.png     "Top 5 Softmax"
-[image10]: ./report_images/visual_features.png  "Visual Features"
+[image0]:  ./report_images/dataset_histograms.png "Data Visualisation"
+[image1]:  ./report_images/orig_images.png        "Original Images"
+[image2]:  ./report_images/preprocess_images.png  "Preprocessed Images"
+[image3]:  ./report/test_images_5.png             "Test Images"
+[image4]:  ./report_images/test_images_5.png      "Confusion Matrix"
+[image5]:  ./report_images/Top_5_Softmax.png      "Top 5 Softmax"
+[image6]:  ./report_images/CF_Test.png            "Confusion Matrix"
+[image7]:  ./report_images/visual_features.png    "Visual Features"
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -56,7 +54,7 @@ I used numpy to calculate summary statistics of the traffic signs data set:
 
 Here is an exploratory visualization of the data set. It is a set of histograms showing how the data is distributed among the 43 classes. The first is an overlaid histogram showing the original and augmented training data, while the second and third are the validation and test data distributions.
 
-![alt text][image1]
+![Data Visualisation][image0]
 
 ###Design and Test a Model Architecture
 
@@ -80,7 +78,9 @@ All values were taken from the Sermanet paper, except for brightness, which was 
 
 Here is an example of a set of 10 random images before and after complete pre-processing and augmentation. A total of 36476 additional images were generated. 
 
-![alt text][image2]
+![Original Images][image1]
+
+![Preprocessed Images][image2]
 
 ####2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
@@ -129,8 +129,7 @@ Based on these numbers, I feel that the network has over-fitted the training dat
 
 Here are five German traffic signs that I found on the web:
 
-![alt text][image4] ![alt text][image5] ![alt text][image6] 
-![alt text][image7] ![alt text][image8]
+![Test Images][image4] 
 
 All of these belong to the classes present in the training data so I expect the network to recognise at least 4 out of 5, given the test accuracy of above 90%.
 
@@ -152,7 +151,8 @@ The model was able to correctly guess 5 of the 5 traffic signs, which gives an a
 ####3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
 For all images, the model is very confident of the class of the sign. The top five soft max probabilities were
-![alt text][image9]
+
+![Top 5 Softmax][image5]
 
 | Probability         	|     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
@@ -164,13 +164,15 @@ For all images, the model is very confident of the class of the sign. The top fi
 
 The slight drop in confidence for 70 km/h is interesting because the next category predicted is No Vehicles. If I look at the No Vehicles sign, it is just like a speed limit sign, except there is no text inside the red circle. So the network has given the closest next possible match, based on learned features. It is also interesting that it did not output the other classes of speed limit signs as second choice. This is a good thing for me because it may point to the fact that the network has learnt to distinguish the numbers inside each sign as well as the surrounding visual features.
 
-The confusion matrix for the test data is shown in 
-![alt text][image10].
+The confusion matrix for the test data is shown below
 
-By studying it, we can see that it is primarily diagonal, which means that the network has classified almost all classes correctly with few misclassifications. By looking for large off-diagonal elements, we can see that classes (11,18,21) have the most mis-classifications. For example, 11 (Right of Way) is often mistaken for 30(Beware of Ice/Snow). The sign for 30 has a snowflake in the middle of it. For low-resolution images, I can understand how the right-of-way symbol might look like a snow-flake. So this mis-classification is visually understandable, given the low quality images of the German data set. We can find similar reasoning for the other mis-classifications. For the five images, I was lucky, in a way, since the image I randomly chose, had good contrast and good enough resolution for the network to pick up the road work symbol clearly.
+![Confusion Matrix][image6].
+
+By studying it, we can see that it is primarily diagonal, which means that the network has classified almost all classes correctly with few misclassifications. By looking for large off-diagonal elements, we can see that classes (11,18,21) have the most mis-classifications. For example, 11 (Right of Way) is often mistaken for 30(Beware of Ice/Snow). The sign for 30 has a snowflake in the middle of it. For low-resolution images, I can understand how the right-of-way symbol might look like a snow-flake. So this mis-classification is visually understandable, given the low quality images of the German data set. We can find similar reasoning for the other mis-classifications. For the five images, I was lucky, in a way, since the image I randomly chose had good contrast and good enough resolution for the network to pick up the road work symbol clearly.
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 ####1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
 
-I implemented the visualisation for the first and second convolutional layers of the MultiNet, based on the template code given in the last cell of the notebook.. However, I was disappointed because I cannot make out any obvious features that it has learnt. Maybe it is the way I am plotting the results with imshow(). I will address this again in the future but given the overdue deadline, I will not invest more time on this at this point.
+I implemented the visualisation for the first and second convolutional layers of the MultiNet, based on the template code given in the last cell of the notebook. The full set of feature maps for all five test images is printed in the last cell of the notebook. However, I was disappointed because I cannot make out any obvious features that it has learnt. Maybe it is the way I am plotting the results with imshow(). I will address this again in the future but given the overdue deadline, I will not invest more time on this at this point. 
 
+![Visual Features][image7].
